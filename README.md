@@ -1,3 +1,6 @@
 # metro-project
 
-TODO: add readme
+Link to WMATA api docs:
+https://developer.wmata.com/docs/services/
+
+

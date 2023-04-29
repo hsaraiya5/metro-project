@@ -4,7 +4,7 @@ import yaml
 import sys
 
 
-with open(".gitignore/wmataApiKeys.yaml", "r") as stream:
+with open("wmataApiKeys.yaml", "r") as stream:
     try:
         keys = yaml.safe_load(stream)
     except yaml.YAMLError as exc:

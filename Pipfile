@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pyaml = "*"
+flask = "*"
 
 [dev-packages]
 

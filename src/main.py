@@ -53,7 +53,7 @@ def listen():
 
     resp = MessagingResponse()
     resp.message(return_str)
-    return return_str
+    return str(resp)
  
 @app.route('/station-mappings')
 def update_station_mapping(): 

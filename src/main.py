@@ -1,8 +1,9 @@
 # Importing flask module in the project is mandatory
 # An object of Flask class is our WSGI application.
-from flask import Flask
+from flask import Flask, request, redirect
 import json, urllib, http.client
 import os
+from twilio.twiml.messaging_response import MessagingResponse
  
 # Flask constructor takes the name of
 # current module (__name__) as argument.
@@ -17,16 +18,15 @@ headers = {
 # The route() function of the Flask class is a decorator,
 # which tells the application which URL should call
 # the associated function.
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 # ‘/’ URL is bound with hello_world() function.
 def listen():
-    f = open('station_code_mappings.json')
+    station_name = request.values.get('Body', None)
+
+    f = open('./data/station_code_mappings.json')
     station_code_mappings = json.load(f)
 
-    line = line_name
-    station_name = name
-
-    for station in station_code_mappings[line]['Stations']:
+    for station in station_code_mappings['stations']:
         for key, value in station.items():
             if key=='Name':
                 if station_name in value.lower():
@@ -50,6 +50,9 @@ def listen():
         else:
             return_str+="\n"
             return_str+=f"{trains['Line']} line headed towards {trains['Destination']} arriving in {trains['Min']} min."
+
+    resp = MessagingResponse()
+    resp.message(return_str)
     return return_str
  
 @app.route('/station-mappings')

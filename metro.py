@@ -1,21 +1,13 @@
 import http.client, urllib.request, urllib.parse, urllib.error, base64
 import json
-import yaml
-import sys
-
-
-with open("wmataApiKeys.yaml", "r") as stream:
-    try:
-        keys = yaml.safe_load(stream)
-    except yaml.YAMLError as exc:
-        print(exc)
+import os
 
 f = open('station_code_mappings.json')
 station_code_mappings = json.load(f)
 
 
 headers = {
-    'api_key': keys['apiKey']
+    'api_key': os.getenv('METRO_API_KEY')
 }
 
 line = input("Enter the line you are on: ")

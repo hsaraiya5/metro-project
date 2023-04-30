@@ -2,21 +2,14 @@
 # An object of Flask class is our WSGI application.
 from flask import Flask
 import json, urllib, http.client
-import yaml
+import os
  
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
- 
-
-with open("../wmataApiKeys.yaml", "r") as stream:
-    try:
-        keys = yaml.safe_load(stream)
-    except yaml.YAMLError as exc:
-        print(exc)
 
 headers = {
-        'api_key': keys['apiKey']
+    'api_key': os.getenv('METRO_API_KEY')
 }
 
 
@@ -34,11 +27,6 @@ def hello_world():
 def get_upcoming_trains(line_name, name):
     f = open('station_code_mappings.json')
     station_code_mappings = json.load(f)
-
-
-    headers = {
-        'api_key': keys['apiKey']
-    }
 
     line = line_name
     station_name = name
@@ -70,15 +58,7 @@ def get_upcoming_trains(line_name, name):
     return return_str
 
 @app.route('/station-mappings')
-def update_station_mapping():
-
-    with open("../wmataApiKeys.yaml", "r") as stream:
-        try:
-            keys = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    
+def update_station_mapping(): 
     lines = ['YL', 'RD', 'SV', 'GR', 'BL', 'OR']
     mappings = {}
     for line in lines:

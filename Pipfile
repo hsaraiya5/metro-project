@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 pyaml = "*"
 flask = "*"
+twilio = "*"
+gunicorn = "*"
 
 [dev-packages]
 

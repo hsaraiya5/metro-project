@@ -19,12 +19,7 @@ headers = {
 # the associated function.
 @app.route('/')
 # ‘/’ URL is bound with hello_world() function.
-def hello_world():
-    return 'Hello World'
- 
-
-@app.route('/station-trains/<line_name>/<name>')
-def get_upcoming_trains(line_name, name):
+def listen():
     f = open('station_code_mappings.json')
     station_code_mappings = json.load(f)
 
@@ -56,11 +51,13 @@ def get_upcoming_trains(line_name, name):
             return_str+="\n"
             return_str+=f"{trains['Line']} line headed towards {trains['Destination']} arriving in {trains['Min']} min."
     return return_str
-
+ 
 @app.route('/station-mappings')
 def update_station_mapping(): 
     lines = ['YL', 'RD', 'SV', 'GR', 'BL', 'OR']
-    mappings = {}
+    mappings = {
+        "stations": []
+    }
     for line in lines:
         params = urllib.parse.urlencode({
             'LineCode': line
@@ -76,10 +73,11 @@ def update_station_mapping():
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
     
-        mappings[line] = line_data
+        for station in line_data["Stations"]:
+            mappings["stations"].append(station)
 
     output = json.dumps(mappings, indent = 2)
-    with open("station_code_mappings.json", "w") as outfile:
+    with open("./data/station_code_mappings.json", "w") as outfile:
         outfile.write(output)
     
     return(mappings)

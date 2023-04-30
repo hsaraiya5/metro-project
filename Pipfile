@@ -8,6 +8,7 @@ pyaml = "*"
 flask = "*"
 twilio = "*"
 gunicorn = "*"
+jsonify = "*"
 
 [dev-packages]
 

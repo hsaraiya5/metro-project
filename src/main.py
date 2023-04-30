@@ -1,8 +1,9 @@
 # Importing flask module in the project is mandatory
 # An object of Flask class is our WSGI application.
-from flask import Flask
+from flask import Flask, request, redirect
 import json, urllib, http.client
 import os
+from twilio.twiml.messaging_response import MessagingResponse
  
 # Flask constructor takes the name of
 # current module (__name__) as argument.
@@ -17,21 +18,15 @@ headers = {
 # The route() function of the Flask class is a decorator,
 # which tells the application which URL should call
 # the associated function.
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 # ‘/’ URL is bound with hello_world() function.
-def hello_world():
-    return 'Hello World'
- 
+def listen():
+    station_name = request.values.get('Body', None)
 
-@app.route('/station-trains/<line_name>/<name>')
-def get_upcoming_trains(line_name, name):
-    f = open('station_code_mappings.json')
+    f = open('./data/station_code_mappings.json')
     station_code_mappings = json.load(f)
 
-    line = line_name
-    station_name = name
-
-    for station in station_code_mappings[line]['Stations']:
+    for station in station_code_mappings['stations']:
         for key, value in station.items():
             if key=='Name':
                 if station_name in value.lower():
@@ -55,12 +50,17 @@ def get_upcoming_trains(line_name, name):
         else:
             return_str+="\n"
             return_str+=f"{trains['Line']} line headed towards {trains['Destination']} arriving in {trains['Min']} min."
-    return return_str
 
+    resp = MessagingResponse()
+    resp.message(return_str)
+    return str(resp)
+ 
 @app.route('/station-mappings')
 def update_station_mapping(): 
     lines = ['YL', 'RD', 'SV', 'GR', 'BL', 'OR']
-    mappings = {}
+    mappings = {
+        "stations": []
+    }
     for line in lines:
         params = urllib.parse.urlencode({
             'LineCode': line
@@ -76,10 +76,11 @@ def update_station_mapping():
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
     
-        mappings[line] = line_data
+        for station in line_data["Stations"]:
+            mappings["stations"].append(station)
 
     output = json.dumps(mappings, indent = 2)
-    with open("station_code_mappings.json", "w") as outfile:
+    with open("./data/station_code_mappings.json", "w") as outfile:
         outfile.write(output)
     
     return(mappings)

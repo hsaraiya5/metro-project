@@ -9,6 +9,7 @@ flask = "*"
 twilio = "*"
 gunicorn = "*"
 jsonify = "*"
+flask_sqlalchemy = "*"
 
 [dev-packages]
 
